@@ -64,6 +64,8 @@ def git_describe(path=Path(__file__).parent):  # path must be a directory
 
 def select_device(device='', batch_size=None):
     # device = 'cpu' or '0' or '0,1,2,3'
+    # select_device 函数作用是选择设备，如果是cpu，那么就返回cpu，如果是gpu，那么就返回gpu的数量
+    # 0,1,2,3分别指的是gpu的编号
     s = f'YOLOv5 🚀 {git_describe() or date_modified()} torch {torch.__version__} '  # string
     device = str(device).strip().lower().replace('cuda:', '')  # to string, 'cuda:0' to '0'
     cpu = device == 'cpu'
@@ -250,6 +252,7 @@ def model_info(model, verbose=False, img_size=640):
 
 
 def load_classifier(name='resnet101', n=2):
+    # 加载预训练模型
     # Loads a pretrained model reshaped to n-class output
     model = torchvision.models.__dict__[name](pretrained=True)
 

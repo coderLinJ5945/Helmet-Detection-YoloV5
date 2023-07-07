@@ -208,16 +208,19 @@ class LoadImages:  # for inference
 
         else:
             # Read image
+            # cv2读取imagede的格式是BGR
             self.count += 1
+            #img0 是BGR格式的元数据
             img0 = cv2.imread(path)  # BGR
             assert img0 is not None, 'Image Not Found ' + path
             print(f'image {self.count}/{self.nf} {path}: ', end='')
 
-        # Padded resize
+        # Padded resize 保持比例缩放：在满足步长等多个约束条件的前提，对图像进行缩放和填充
         img = letterbox(img0, self.img_size, stride=self.stride)[0]
 
-        # Convert
+        # Convert [::-1]含义：将数组倒序排列  (2, 0, 1)的含义：将第二维度放到第一维度，第一维度放到第二维度，第三维度放到第三维度 BGR to RGB
         img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+        # ascontiguousarray()函数的作用是：将数组以连续数组的形式返回
         img = np.ascontiguousarray(img)
 
         return path, img, img0, self.cap

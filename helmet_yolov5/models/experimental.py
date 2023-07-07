@@ -112,7 +112,7 @@ class Ensemble(nn.ModuleList):
 
 def attempt_load(weights, map_location=None, inplace=True):
     from models.yolo import Detect, Model
-
+    # attempt_load的作用是加载模型权重文件，返回模型
     # Loads an ensemble of models weights=[a,b,c] or a single model weights=[a] or weights=a
     model = Ensemble()
     for w in weights if isinstance(weights, list) else [weights]:

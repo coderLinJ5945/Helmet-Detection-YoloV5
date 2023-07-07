@@ -73,6 +73,7 @@ def methods(instance):
 
 
 def set_logging(rank=-1, verbose=True):
+    # 作用：设置logging的格式
     logging.basicConfig(
         format="%(message)s",
         level=logging.INFO if (verbose and rank in [-1, 0]) else logging.WARN)
@@ -197,6 +198,7 @@ def check_requirements(requirements='requirements.txt', exclude=()):
 
 
 def check_img_size(img_size, s=32, floor=0):
+    # check_img_size方法的逻辑是将输入的img_size（不能被32整除的数）转换为32的倍数的值
     # Verify img_size is a multiple of stride s
     new_size = max(make_divisible(img_size, int(s)), floor)  # ceil gs-multiple
     if new_size != img_size:
@@ -324,6 +326,7 @@ def download(url, dir='.', unzip=True, delete=True, curl=False, threads=1):
 
 
 def make_divisible(x, divisor):
+    # make_divisible的作用是将x调整为divisor的整数倍
     # Returns x evenly divisible by divisor
     return math.ceil(x / divisor) * divisor
 
@@ -708,6 +711,7 @@ def save_one_box(xyxy, im, file='image.jpg', gain=1.02, pad=10, square=False, BG
 
 def increment_path(path, exist_ok=False, sep='', mkdir=False):
     # Increment file or directory path, i.e. runs/exp --> runs/exp{sep}2, runs/exp{sep}3, ... etc.
+    # 此方法作用是在文件名后面加上数字，如果文件名已经存在，那么数字加1
     path = Path(path)  # os-agnostic
     if path.exists() and not exist_ok:
         suffix = path.suffix
