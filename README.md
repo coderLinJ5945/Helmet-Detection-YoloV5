@@ -145,3 +145,18 @@ $ python train.py --epochs 200 --data custom_data.yaml --cfg yolov5s.yaml --weig
 - [YoloV5](https://github.com/ultralytics/yolov5)
 - [YoloV5-tensorrt](https://github.com/wang-xinyu/tensorrtx/tree/master/yolov5)
 
+
+# 异常记录：
+
+## 异常1：AttributeError: 'Upsample' object has no attribute 'recompute_scale_factor'
+问题原因：torch和torchvision版本过高导致
+解决办法1：降低 torch和torchvision版本分别到 1.9.1 和0.10.1
+解决办法2：修改 torch/nn/modules/upsampling.py部分源码
+```angular2html
+    # def forward(self, input: Tensor) -> Tensor:
+    #     return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners,
+    #                          recompute_scale_factor=self.recompute_scale_factor)
+    def forward(self, input: Tensor) -> Tensor:
+        return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners)
+```
+

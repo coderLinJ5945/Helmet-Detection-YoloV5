@@ -26,17 +26,17 @@ from utils.torch_utils import select_device, load_classifier, time_sync
 
 @torch.no_grad()
 def run(weights='yolov5s.pt',  # model.pt path(s)
-        source='data/images',  # file/dir/URL/glob, 0 for webcam
-        imgsz=640,  # inference size (pixels)
-        conf_thres=0.25,  # confidence threshold
-        iou_thres=0.45,  # NMS IOU threshold
-        max_det=1000,  # maximum detections per image
-        device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
+        source='data/images',  # file/dir/URL/glob, 0 for webcam  各种类型的文件
+        imgsz=640,  # inference size (pixels ) 推断大小：像素
+        conf_thres=0.25,  # confidence threshold 置信度阈值
+        iou_thres=0.45,  # NMS IOU threshold NMS IOU阈值
+        max_det=1000,  # maximum detections per image 每张图片的最大检测次数：1000次
+        device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu 使用的设备类型：该模型只支持GPU
         view_img=False,  # show results
         save_txt=False,  # save results to *.txt
         save_conf=False,  # save confidences in --save-txt labels
         save_crop=False,  # save cropped prediction boxes
-        nosave=False,  # do not save images/videos
+        nosave=False,  # do not save images/videos 是否保存推理后的结果图像
         classes=None,  # filter by class: --class 0, or --class 0 2 3
         agnostic_nms=False,  # class-agnostic NMS
         augment=False,  # augmented inference
@@ -50,24 +50,32 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
         ):
-    save_img = not nosave and not source.endswith('.txt')  # save inference images
+    # save inference images 保存推理结果图像
+    save_img = not nosave and not source.endswith('.txt')
+    # ？
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
 
-    # Directories
+    # 推理结果图像保存的文件夹 Directories
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
+    # 是否保存labels文件
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Initialize
+    # 配置开启日志
     set_logging()
+    # 配置选择 cpu or cuda（0,1,2,3 为使用gpu的核数）
     device = select_device(device)
+    # 半精度方法只支持CUDA模式
     half &= device.type != 'cpu'  # half precision only supported on CUDA
-
-    # Load model
+    # Load model 加载模型
     w = weights[0] if isinstance(weights, list) else weights
+    # 设置模型的推理类型 如果以 .pt 结尾 pt = True，如果 .onnx结尾 onnx = True
     classify, pt, onnx = False, w.endswith('.pt'), w.endswith('.onnx')  # inference type
+    # 步长？
     stride, names = 64, [f'class{i}' for i in range(1000)]  # assign defaults
     if pt:
+        # 加载模型文件
         model = attempt_load(weights, map_location=device)  # load FP32 model
         stride = int(model.stride.max())  # model stride
         names = model.module.names if hasattr(model, 'module') else model.names  # get class names
@@ -198,6 +206,13 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
 
 def parse_opt():
+    # 启动命令demo：
+    # python helmet_yolov5/detect.py
+    # --source test/595a84814d0e4c9a91c0ea7e30214ac7.jpeg
+    # --weights model_files/helmet.pt --device cpu
+    # --imgsz 640
+    # --view-img
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
     parser.add_argument('--source', type=str, default='data/images', help='file/dir/URL/glob, 0 for webcam')
@@ -229,10 +244,17 @@ def parse_opt():
 
 def main(opt):
     print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
+    # 2. 检查验证环境：requirements.txt中的软件包版本要求是否匹配
     check_requirements(exclude=('tensorboard', 'thop'))
+    # 3. 运行模型预测推理
     run(**vars(opt))
-
+    # import torch
+    # print(torch.cuda.is_available())
+    # print(torch.backends.cudnn.is_available())
+    # print(torch.cuda_version)
+    # print(torch.backends.cudnn.version())
 
 if __name__ == "__main__":
+    # 1. opt 启动main方法参数，有学习借鉴意义
     opt = parse_opt()
     main(opt)

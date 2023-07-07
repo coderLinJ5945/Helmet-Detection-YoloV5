@@ -29,3 +29,8 @@ pandas
 # pycocotools>=2.0  # COCO mAP
 # albumentations>=1.0.3
 thop  # FLOPs computation
+
+# pip init package--------------------------------------
+# pip        23.1.2
+# setuptools 67.8.0
+# wheel      0.38.4
